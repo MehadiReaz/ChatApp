@@ -1,5 +1,6 @@
 import 'package:chatapp/presentation/ui/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,10 +14,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      Duration(seconds: 3),
-      () => Get.offAll(() => LoginScreen()),
-    );
+    Future.delayed(Duration(seconds: 3), () {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+      Get.offAll(() => LoginScreen());
+    });
   }
 
   @override
@@ -48,14 +51,6 @@ class _SplashScreenState extends State<SplashScreen> {
                       style: TextStyle(color: Colors.black45),
                     )
                   ]))
-              // Text(
-
-              //   textAlign: TextAlign.center,
-              // ),
-              // Text(
-
-              //   textAlign: TextAlign.center,
-              // ),
             ],
           ),
         ),

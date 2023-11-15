@@ -1,12 +1,42 @@
+import 'dart:developer';
+
 import 'package:chatapp/presentation/ui/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
+}
+
+_googleSignIn() {
+  _signInWithGoogle().then((user) {
+    log('\n User: ${user.user}');
+    log('\n User: ${user.additionalUserInfo}');
+    Get.offAll(() => HomeScreen());
+  });
+}
+
+Future<UserCredential> _signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -105,7 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 10,
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    _googleSignIn();
+                  },
                   icon: Container(
                     height: 40,
                     padding: EdgeInsets.all(8),
