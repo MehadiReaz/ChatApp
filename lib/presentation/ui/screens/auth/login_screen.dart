@@ -10,24 +10,30 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _obscured = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 30, 16, 30),
+          padding:
+              const EdgeInsets.only(top: 100, left: 16, right: 16, bottom: 40),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset('assets/images/login.png'),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 25,
-                    ),
+                Image.asset(
+                  'assets/images/mail.png',
+                  width: 200,
+                  height: 200,
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  'Login to your Account',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 25,
                   ),
                 ),
                 const SizedBox(
@@ -35,26 +41,49 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const TextField(
                   decoration: InputDecoration(
-                    isDense: true, // Added this
-                    contentPadding: EdgeInsets.all(15), // Added this
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black12),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(5),
+                      isDense: true, // Added this
+                      contentPadding: EdgeInsets.all(15), // Added this
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black12),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(5),
+                        ),
                       ),
-                    ),
-                    //labelText: 'Email',
-                  ),
+                      labelText: 'Email',
+                      hintText: 'Example@outlook.com'),
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 15,
                 ),
-                const TextField(
+                TextField(
+                  obscureText: _obscured,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Passward',
-                  ),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              if (_obscured == false) {
+                                _obscured = true;
+                              } else {
+                                _obscured = false;
+                              }
+                            });
+                          },
+                          icon: _obscured
+                              ? Icon(Icons.remove_red_eye)
+                              : Icon(Icons.remove_red_eye_rounded)),
+                      isDense: true, // Added this
+                      contentPadding: EdgeInsets.all(15), // Added this
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black12),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(5),
+                        ),
+                      ),
+                      labelText: 'Password',
+                      hintText: '****'),
+                ),
+                const SizedBox(
+                  height: 15,
                 ),
                 ElevatedButton(
                     onPressed: () => Get.offAll(() => HomeScreen()),
