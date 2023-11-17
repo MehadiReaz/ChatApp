@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:chatapp/presentation/ui/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,28 +16,37 @@ class LoginScreen extends StatefulWidget {
 
 _googleSignIn() {
   _signInWithGoogle().then((user) {
-    log('\n User: ${user.user}');
-    log('\n User: ${user.additionalUserInfo}');
-    Get.offAll(() => HomeScreen());
+    if (user != null) {
+      log('\n User: ${user.user}');
+      log('\n User: ${user.additionalUserInfo}');
+      Get.offAll(() => HomeScreen());
+    }
   });
 }
 
-Future<UserCredential> _signInWithGoogle() async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+Future<UserCredential?> _signInWithGoogle() async {
+  try {
+    await InternetAddress.lookup('google.com');
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
-  // Create a new credential
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
 
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  } catch (e) {
+    log('\n${e}');
+    Get.snackbar('No Internet', 'Please try again');
+    return null;
+  }
 }
 
 class _LoginScreenState extends State<LoginScreen> {
