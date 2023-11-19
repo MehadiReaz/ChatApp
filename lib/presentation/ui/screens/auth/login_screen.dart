@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:chatapp/data/apis.dart';
 import 'package:chatapp/presentation/ui/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +16,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 _googleSignIn() {
-  _signInWithGoogle().then((user) {
+  _signInWithGoogle().then((user) async {
     if (user != null) {
+      if ((await Apis.isUserExists())) {
+        Get.offAll(() => HomeScreen());
+      } else {
+        await Apis.createUser().then((value) => Get.offAll(() => HomeScreen()));
+      }
       log('\n User: ${user.user}');
       log('\n User: ${user.additionalUserInfo}');
-      Get.offAll(() => HomeScreen());
     }
   });
 }
