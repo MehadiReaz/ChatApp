@@ -6,7 +6,9 @@ class Apis {
   static FirebaseAuth auth = FirebaseAuth.instance;
 
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
   static User get user => auth.currentUser!;
+
   static Future<bool> isUserExists() async {
     return (await firebaseFirestore.collection('users').doc(user.uid).get())
         .exists;
@@ -30,5 +32,33 @@ class Apis {
         .collection('users')
         .doc(user.uid)
         .set(chatUser.toJson());
+  }
+
+  static Stream getAllUsers() {
+    return firebaseFirestore
+        .collection('users')
+        .where('id', isNotEqualTo: user.uid)
+        .snapshots();
+  }
+
+  static Users? selfUser;
+
+  static Future<void> getSelfUserInfo() async {
+    return await firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then((user) async {
+      user.exists
+          ? selfUser = Users.fromJson(user.data()!)
+          : await createUser().then((value) => getSelfUserInfo());
+    });
+  }
+
+  static Future<void> updateSelfUserInfo() async {
+    await firebaseFirestore.collection('users').doc(user.uid).update({
+      'name': selfUser?.name,
+      'about': selfUser?.about,
+    });
   }
 }

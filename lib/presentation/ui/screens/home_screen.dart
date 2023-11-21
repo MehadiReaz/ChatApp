@@ -1,8 +1,9 @@
 import 'package:chatapp/data/apis.dart';
+import 'package:chatapp/presentation/ui/screens/update_profile_screen.dart';
 import 'package:chatapp/presentation/ui/widgets/chat_user_card.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:get/get.dart';
 
 import '../../../data/user_model.dart';
 
@@ -17,9 +18,16 @@ List list = [];
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+    Apis.getSelfUserInfo();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 2,
         title: Text('Chap App'),
         actions: [
           IconButton(
@@ -27,16 +35,20 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.search),
           ),
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.more_vert),
+            onPressed: () {
+              Get.to(() => UpdateProfileScreen(
+                    user: Apis.selfUser!,
+                  ));
+            },
+            icon: Icon(CupertinoIcons.profile_circled),
           ),
         ],
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(8),
           child: StreamBuilder(
-            stream: Apis.firebaseFirestore.collection('users').snapshots(),
+            stream: Apis.getAllUsers(),
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -70,10 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () async {
-        await FirebaseAuth.instance.signOut();
-        await GoogleSignIn().signOut();
-      }),
+      floatingActionButton: FloatingActionButton(onPressed: () async {}),
     );
   }
 }
