@@ -3,6 +3,7 @@ import 'package:chatapp/data/apis.dart';
 import 'package:chatapp/data/user_model.dart';
 import 'package:chatapp/presentation/ui/screens/auth/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -67,7 +68,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         child: MaterialButton(
                             shape: CircleBorder(),
                             color: Colors.white,
-                            onPressed: () {},
+                            onPressed: () {
+                              _showBottomSheet();
+                            },
                             child: Icon(
                               Icons.edit,
                               color: Colors.black,
@@ -156,5 +159,28 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         icon: Icon(Icons.logout_outlined),
       ),
     );
+  }
+
+  void _showBottomSheet() {
+    Get.bottomSheet(
+        Container(
+          child: Wrap(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: ListView(shrinkWrap: true, children: [
+                  Text(
+                    'Select Photo',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ]),
+              )
+            ],
+          ),
+        ),
+        backgroundColor: Colors.white);
   }
 }
