@@ -1,12 +1,14 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatapp/data/apis.dart';
 import 'package:chatapp/data/user_model.dart';
 import 'package:chatapp/presentation/ui/screens/auth/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key, required this.user});
@@ -16,6 +18,28 @@ class UpdateProfileScreen extends StatefulWidget {
 }
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
+  String? image;
+
+  picImageFromGallery() async {
+    final ImagePicker imagePicker = ImagePicker();
+    final XFile? gallery =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+    if (gallery != null) {
+      image = gallery.path;
+      setState(() {});
+    }
+  }
+
+  picImageFromCamera() async {
+    final ImagePicker imagePicker = ImagePicker();
+    final XFile? camera =
+        await imagePicker.pickImage(source: ImageSource.camera);
+    if (camera != null) {
+      image = camera.path;
+      setState(() {});
+    }
+  }
+
   profileUpdate() {
     Apis.updateSelfUserInfo();
     Get.showSnackbar(GetSnackBar(
@@ -50,18 +74,24 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   ),
                   Stack(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(110),
-                        child: CachedNetworkImage(
-                          height: 200,
-                          fit: BoxFit.cover,
-                          imageUrl: widget.user.image!,
-                          placeholder: (context, url) =>
-                              Center(child: CircularProgressIndicator()),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                        ),
-                      ),
+                      image != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(110),
+                              child: Image.file(
+                                  height: 200, fit: BoxFit.cover, File(image!)),
+                            )
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(110),
+                              child: CachedNetworkImage(
+                                height: 200,
+                                fit: BoxFit.cover,
+                                imageUrl: widget.user.image!,
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              ),
+                            ),
                       Positioned(
                         right: 0,
                         bottom: 0,
@@ -175,6 +205,39 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       fontSize: 18,
                     ),
                     textAlign: TextAlign.center,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          picImageFromCamera();
+                        },
+                        icon: Column(
+                          children: [
+                            Icon(
+                              Icons.camera_alt,
+                              size: 80,
+                            ),
+                            Text('Camera'),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          picImageFromGallery();
+                        },
+                        icon: Column(
+                          children: [
+                            Icon(
+                              Icons.photo_library,
+                              size: 80,
+                            ),
+                            Text('Gallery'),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ]),
               )
