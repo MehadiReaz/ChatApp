@@ -27,6 +27,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (gallery != null) {
       image = gallery.path;
       setState(() {});
+      Apis.updateProfilePicture(File(image!));
     }
   }
 
@@ -37,6 +38,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (camera != null) {
       image = camera.path;
       setState(() {});
+      Apis.updateProfilePicture(File(image!));
     }
   }
 
