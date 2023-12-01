@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatapp/data/user_model.dart';
-import 'package:chatapp/presentation/ui/screens/caht_screen.dart';
+import 'package:chatapp/data/models/user_model.dart';
+import 'package:chatapp/presentation/ui/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chatapp/data/user_model.dart';
+import 'package:chatapp/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -76,5 +76,9 @@ class Apis {
         .collection('users')
         .doc(user.uid)
         .update({'image': selfUser?.image});
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessage() {
+    return firebaseFirestore.collection('messages').snapshots();
   }
 }

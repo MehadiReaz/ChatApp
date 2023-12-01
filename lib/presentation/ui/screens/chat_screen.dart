@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatapp/data/user_model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:chatapp/data/apis.dart';
+import 'package:chatapp/data/models/message_model.dart';
+import 'package:chatapp/data/models/user_model.dart';
+import 'package:chatapp/presentation/ui/widgets/message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,6 +17,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  List<Message> _list = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,18 +28,68 @@ class _ChatScreenState extends State<ChatScreen> {
         flexibleSpace: appBar(),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
+            Expanded(
+              child: StreamBuilder(
+                  stream: Apis.getAllMessage(),
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                      case ConnectionState.none:
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      case ConnectionState.active:
+                      case ConnectionState.done:
+                        final data = snapshot.data?.docs;
+                        log('hhh:${jsonEncode(data![0].data())}');
+
+                        _list.clear();
+                        _list.add(Message(
+                          fromId: 'sss',
+                          msg: 'sss',
+                          read: 'sss',
+                          sent: 'sss',
+                          told: Apis.user.uid,
+                          type: Type.text,
+                        ));
+                        _list.add(Message(
+                          fromId: 'sss',
+                          msg: 'sss',
+                          read: 'sss',
+                          sent: 'sss',
+                          told: Apis.user.uid,
+                          type: Type.text,
+                        ));
+                        if (_list.isNotEmpty) {
+                          return ListView.builder(
+                              itemCount: _list.length,
+                              padding: EdgeInsets.all(8),
+                              physics: const BouncingScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return MessageCard(
+                                  message: _list[index],
+                                );
+                              });
+                        } else {
+                          return const Center(
+                            child: Text('Start Messageing'),
+                          );
+                        }
+                    }
+                  }),
+            ),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
                     margin: EdgeInsets.only(
                       bottom: 20.0,
                     ),
-                    width: 340,
+                    width: 320,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
@@ -60,12 +116,13 @@ class _ChatScreenState extends State<ChatScreen> {
                           icon: Icon(Icons.image),
                         ),
                         IconButton(
-                            onPressed: () {}, icon: Icon(Icons.camera_alt))
+                          onPressed: () {},
+                          icon: Icon(Icons.camera_alt),
+                        ),
                       ],
                     ),
                   ),
-                ),
-                Container(
+                  Container(
                     margin: EdgeInsets.only(
                       left: 5,
                       bottom: 20.0,
@@ -74,13 +131,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(60)),
                     child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.send,
-                          color: Colors.white,
-                        )))
-              ],
-            ),
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.send,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
